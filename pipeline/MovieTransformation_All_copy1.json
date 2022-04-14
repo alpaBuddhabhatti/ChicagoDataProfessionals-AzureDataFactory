@@ -33,7 +33,10 @@
 									"value": "@replace(pipeline().parameters.FileName,'.csv','')",
 									"type": "Expression"
 								},
-								"SchemaName": ".dbo"
+								"SchemaName": {
+									"value": "dbo",
+									"type": "Expression"
+								}
 							},
 							"AllData": {
 								"Speccode": {
