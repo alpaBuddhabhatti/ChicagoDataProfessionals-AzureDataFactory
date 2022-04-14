@@ -58,24 +58,14 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_ABLB_IN",
+						"referenceName": "DS_ABLB_IN_copy1",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
 						"referenceName": "DS_ADLS_STAGING",
-						"type": "DatasetReference",
-						"parameters": {
-							"FileName": {
-								"value": "@item().name",
-								"type": "Expression"
-							},
-							"Speccode": {
-								"value": "@pipeline().parameters.specdode",
-								"type": "Expression"
-							}
-						}
+						"type": "DatasetReference"
 					}
 				]
 			}
