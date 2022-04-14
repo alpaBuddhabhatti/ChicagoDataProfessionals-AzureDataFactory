@@ -68,7 +68,7 @@
 			},
 			"Speccode": {
 				"type": "string",
-				"defaultValue": "movie-staging"
+				"defaultValue": "movie"
 			}
 		},
 		"folder": {
