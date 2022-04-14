@@ -1,5 +1,5 @@
 {
-	"name": "DS_ADLS_STAGING_copy1",
+	"name": "DS_ADLS_STAGING_FIRST",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ADLS",

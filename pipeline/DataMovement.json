@@ -58,13 +58,13 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_ABLB_IN_copy1",
+						"referenceName": "DS_ABLB_IN_FIRST",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_ADLS_STAGING_copy1",
+						"referenceName": "DS_ADLS_STAGING_FIRST",
 						"type": "DatasetReference"
 					}
 				]
