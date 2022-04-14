@@ -13,6 +13,145 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/TransformationDemo_SQL')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_ADLS_STAGING_All",
+								"type": "DatasetReference"
+							},
+							"name": "MovieDB"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "DS_ASQL",
+								"type": "DatasetReference"
+							},
+							"name": "MoviesSink"
+						},
+						{
+							"dataset": {
+								"referenceName": "DS_ADLS_SINK",
+								"type": "DatasetReference"
+							},
+							"name": "AllData"
+						}
+					],
+					"transformations": [
+						{
+							"name": "FilterYear"
+						},
+						{
+							"name": "AggregateComedyRatings"
+						},
+						{
+							"name": "DerivedColumnAddress"
+						},
+						{
+							"name": "DerivedColumnAll"
+						}
+					],
+					"script": "parameters{\n\tSpeccode as string (movie)\n}\nsource(output(\n\t\tmovie as string,\n\t\ttitle as string,\n\t\tgenres as string,\n\t\tyear as string,\n\t\tRating as string,\n\t\t{Rotton Tomato} as string,\n\t\tProp_6 as string,\n\t\tAddress as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\twildcardPaths:[('*.csv')]) ~> MovieDB\nMovieDB filter(toInteger(year) >= 1900 && toInteger(year) <= 2000) ~> FilterYear\nDerivedColumnAll aggregate(groupBy(year),\n\tAverageComedyRating = avg(toInteger(Rating))) ~> AggregateComedyRatings\nFilterYear derive(AllAddress = regexReplace(regexReplace(Address,'[\\n]',','),'[\\r]',',')) ~> DerivedColumnAddress\nDerivedColumnAddress derive({Address 1} = split({AllAddress},',')[1],\n\t\t{Address 2} = split({AllAddress},',')[2],\n\t\t{Address 3} = split({AllAddress},',')[3],\n\t\t{Address 4} = split({AllAddress},',')[4]) ~> DerivedColumnAll\nAggregateComedyRatings sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\trecreate:true,\n\tformat: 'table',\n\terrorHandlingOption: 'stopOnFirstError',\n\tpartitionBy('hash', 1),\n\tpreCommands: [],\n\tpostCommands: []) ~> MoviesSink\nDerivedColumnAll sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Movie.csv'],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> AllData"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MovieTransformation')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow - Movie",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransformationDemo",
+								"type": "DataFlowReference",
+								"parameters": {
+									"FileName": {
+										"value": "'@{pipeline().parameters.FileName}'",
+										"type": "Expression"
+									},
+									"Speccode": {
+										"value": "'@{pipeline().parameters.Speccode}'",
+										"type": "Expression"
+									}
+								},
+								"datasetParameters": {
+									"MovieDB": {
+										"FileName": {
+											"value": "@pipeline().parameters.FileName",
+											"type": "Expression"
+										},
+										"Speccode": {
+											"value": "@pipeline().parameters.Speccode",
+											"type": "Expression"
+										}
+									},
+									"MoviesSink": {
+										"Speccode": {
+											"value": "@pipeline().parameters.Speccode",
+											"type": "Expression"
+										}
+									},
+									"AllData": {
+										"Speccode": {
+											"value": "@pipeline().parameters.Speccode",
+											"type": "Expression"
+										}
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string",
+						"defaultValue": "moviesDB.csv"
+					},
+					"Speccode": {
+						"type": "string",
+						"defaultValue": "movie"
+					}
+				},
+				"folder": {
+					"name": "Transforming"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-08-12T17:06:05Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/MovieTransformation_All')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -99,6 +238,89 @@
 				"lastPublishTime": "2021-09-06T22:54:46Z"
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MovieTransformation_SQL')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow - Movie",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "1.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "TransformationDemo_SQL",
+								"type": "DataFlowReference",
+								"parameters": {
+									"Speccode": "movie"
+								},
+								"datasetParameters": {
+									"MovieDB": {
+										"Speccode": {
+											"value": "@pipeline().parameters.Speccode",
+											"type": "Expression"
+										}
+									},
+									"MoviesSink": {
+										"TableName": {
+											"value": "@replace(pipeline().parameters.FileName,'.csv','')",
+											"type": "Expression"
+										},
+										"SchemaName": {
+											"value": "dbo",
+											"type": "Expression"
+										}
+									},
+									"AllData": {
+										"Speccode": {
+											"value": "@pipeline().parameters.Speccode",
+											"type": "Expression"
+										}
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"FileName": {
+						"type": "string",
+						"defaultValue": "moviesDB.csv"
+					},
+					"Speccode": {
+						"type": "string",
+						"defaultValue": "movie"
+					}
+				},
+				"folder": {
+					"name": "Transforming"
+				},
+				"annotations": [],
+				"lastPublishTime": "2021-09-06T22:54:46Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TransformationDemo_SQL')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/ELT')]",
@@ -252,7 +474,9 @@
 				"annotations": [],
 				"lastPublishTime": "2021-08-12T17:06:06Z"
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MovieTransformation')]"
+			]
 		}
 	]
 }
