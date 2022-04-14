@@ -16,11 +16,11 @@
 				"userProperties": [
 					{
 						"name": "Source",
-						"value": "movie-in//@{item().name}"
+						"value": "movie-in//moviesDB.csv"
 					},
 					{
 						"name": "Destination",
-						"value": "loading//"
+						"value": "//"
 					}
 				],
 				"typeProperties": {
