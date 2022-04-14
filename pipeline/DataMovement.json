@@ -64,7 +64,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_ADLS_STAGING",
+						"referenceName": "DS_ADLS_STAGING_copy1",
 						"type": "DatasetReference"
 					}
 				]
