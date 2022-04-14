@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "TransformationDemo_All_copy1",
+						"referenceName": "TransformationDemo_SQL",
 						"type": "DataFlowReference",
 						"parameters": {
 							"Speccode": "movie"
