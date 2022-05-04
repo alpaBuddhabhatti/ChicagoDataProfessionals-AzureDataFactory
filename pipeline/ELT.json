@@ -35,7 +35,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "MovieTransformation_SQL",
+						"referenceName": "MovieDataTransformation",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true,

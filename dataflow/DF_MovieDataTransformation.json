@@ -1,5 +1,5 @@
 {
-	"name": "TransformationDemo_SQL",
+	"name": "DF_MovieDataTransformation",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
