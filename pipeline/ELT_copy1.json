@@ -52,14 +52,6 @@
 			"speccode": {
 				"type": "string",
 				"defaultValue": "movie"
-			},
-			"FileName": {
-				"type": "string",
-				"defaultValue": "RatedMovie.csv"
-			},
-			"Schema": {
-				"type": "string",
-				"defaultValue": "dbo"
 			}
 		},
 		"annotations": [],
