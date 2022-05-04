@@ -12,6 +12,9 @@
 				}
 			}
 		],
+		"folder": {
+			"name": "All"
+		},
 		"annotations": []
 	}
 }
